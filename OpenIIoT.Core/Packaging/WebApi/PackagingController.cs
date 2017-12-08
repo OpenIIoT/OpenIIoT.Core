@@ -177,12 +177,12 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
                     if (deleteResult.ResultCode != ResultCode.Failure)
                     {
-                        return Request.CreateResponse(HttpStatusCode.NoContent);
+                        retVal = Request.CreateResponse(HttpStatusCode.NoContent);
                     }
                     else
                     {
                         HttpErrorResult result = new HttpErrorResult($"Failed to delete Package Archive '{fqn}'.", deleteResult);
-                        return Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
                     }
                 }
                 else
@@ -471,12 +471,12 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
                     if (installResult.ResultCode != ResultCode.Failure)
                     {
-                        return Request.CreateResponse(HttpStatusCode.OK, installResult.ReturnValue, JsonFormatter());
+                        retVal = Request.CreateResponse(HttpStatusCode.OK, installResult.ReturnValue, JsonFormatter());
                     }
                     else
                     {
                         HttpErrorResult result = new HttpErrorResult($"Failed to install Package '{fqn}'.", installResult);
-                        return Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
                     }
                 }
                 else
@@ -520,12 +520,12 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
                     if (uninstallResult.ResultCode != ResultCode.Failure)
                     {
-                        return Request.CreateResponse(HttpStatusCode.NoContent);
+                        retVal = Request.CreateResponse(HttpStatusCode.NoContent);
                     }
                     else
                     {
                         HttpErrorResult result = new HttpErrorResult($"Failed to uninstall Package '{fqn}'.", uninstallResult);
-                        return Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
                     }
                 }
                 else
