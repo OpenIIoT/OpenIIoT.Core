@@ -93,7 +93,7 @@ namespace OpenIIoT.Core.Service.WebApi
         public const string NotFoundRoutePrefix = "404";
 
         /// <summary>
-        ///     The name of the cookie used to store the <see cref="SDK.Security.Session.Token"/>.
+        ///     The name of the cookie used to store the <see cref="SDK.Security.ISession.Token"/>.
         /// </summary>
         public const string SessionTokenCookieName = "Session-Token";
 
@@ -107,15 +107,23 @@ namespace OpenIIoT.Core.Service.WebApi
         /// </summary>
         public static readonly string[] AnonymousRoutes = { ApiRoutePrefix, SignalRRoutePrefix, HelpRoutePrefix, LoginRoutePrefix, NotFoundRoutePrefix, AssetPath, ModulePath };
 
-        public static readonly string[] CacheSuppressedExtensions = { ".html", ".htm" };
+        /// <summary>
+        ///     The list of extensions for which cache is suppressed.
+        /// </summary>
+        public static readonly string[] CacheSuppressedExtensions = { ".html", ".htm", string.Empty };
 
         /// <summary>
-        ///     The list of routes for which the <see cref="SDK.Security.Session"/> will not be extended, regardless of configuration.
+        ///     The list of routes for which the <see cref="SDK.Security.ISession"/> will not be extended, regardless of configuration.
         /// </summary>
         public static readonly string[] NonExtendableRoutes = { "api/v1/info" };
 
         /// <summary>
-        ///     The list of routes which will not be redirected upon a 404 or <see cref="SDK.Security.Session"/> error.
+        ///     The list of extensions for which 404 not found redirection is applicable.
+        /// </summary>
+        public static readonly string[] RedirectableExtensions = { ".html", ".htm", string.Empty };
+
+        /// <summary>
+        ///     The list of routes which will not be redirected upon a 404 or <see cref="SDK.Security.ISession"/> error.
         /// </summary>
         public static readonly string[] RedirectSuppressedRoutes = { ApiRoutePrefix, SignalRRoutePrefix, HelpRoutePrefix, LoginRoutePrefix, NotFoundRoutePrefix, AssetPath, ModulePath };
 

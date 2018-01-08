@@ -55,6 +55,7 @@ namespace OpenIIoT.Core.Service.WebApi
     using System.Threading.Tasks;
     using Microsoft.Owin;
     using OpenIIoT.SDK.Service.WebApi;
+    using System.IO;
 
     /// <summary>
     ///     Owin middleware for 404 redirection.
@@ -88,7 +89,7 @@ namespace OpenIIoT.Core.Service.WebApi
         {
             await Next.Invoke(context);
 
-            if (context.Response.StatusCode == 404 && !IsRedirectSuppressedRoute(new PathString(context.Request.Path.Value)))
+            if (context.Response.StatusCode == 404 && IsRedirectableExtension(context.Request.Path.Value) && !IsRedirectSuppressedRoute(new PathString(context.Request.Path.Value)))
             {
                 context.Response.Redirect(GetPathString(WebApiConstants.NotFoundRoutePrefix).Value);
             }
@@ -106,6 +107,12 @@ namespace OpenIIoT.Core.Service.WebApi
         private PathString GetPathString(string path)
         {
             return new PathString("/" + (Configuration.Root + "/" + path).Trim('/'));
+        }
+
+        private bool IsRedirectableExtension(string path)
+        {
+            List<string> redirectableExtensions = WebApiConstants.RedirectableExtensions.ToList();
+            return redirectableExtensions.Any(e => Path.GetExtension(e) == Path.GetExtension(path));
         }
 
         /// <summary>
