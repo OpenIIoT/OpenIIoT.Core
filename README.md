@@ -69,7 +69,26 @@ This screen demonstrates the application streaming a real-time data item from th
 
 The current update rate at the back end is 50 milliseconds, and as can be seen in the browser the unbroken sine wave depicted in the graph illustrates that neither the back end nor the real-time data pipe drops frames (on most systems, under most conditions).
 
+### Database
+
+The back end model is completely agnostic about the data it contains, and to illustrate this the Database display was created:
+
+![database display](doc/img/database.png)
+
+This information is fetched from a SQL database (AWS RDS), piped through the application, and sent to the browser as a simple JSON object.
+
+This screen, like most, uses a SignalR connection to display data in real-time, although the database is presently static so no data changes.  If you see data updating on this screen I have since scheduled a task to change it periodically.
+
+### API
+
+The various APIs exposed by the application are fully documented using [Swashbuckle](https://github.com/domaindrivendev/Swashbuckle) annotations in the code.  This allows for use with [Swagger UI](https://swagger.io/swagger-ui/), which has been customized to better match the look and feel of the front end:
+
+![api](doc/img/api.png)
+
+This interface can be accessed via the 'API' menu, or directly at (http://demo.openiiot.org/help)[http://demo.openiiot.org/help].
+
+Note that these APIs are very much a work in progress, and presently the only two endpoints which are in a presentable state are the two which are expanded in the screenshot, Security and Packaging.
 
 ## Documentation
 
-Documentation is updated somewhat regularly and can be found at [http://openiiot.org](http://openiiot.org).
+Code documentation is generated with [Sandcastle Help File Builder](https://github.com/EWSoftware/SHFB) and is updated somewhat regularly at [http://openiiot.org](http://openiiot.org).
