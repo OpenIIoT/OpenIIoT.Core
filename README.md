@@ -7,7 +7,7 @@
 
 ## About
 
-OpenIIoT is a cross-platform (via Mono) application platform for the (Industrial) Internet of Things written in C#.  The code in this repository is a work in progress and is presently on hiatus.
+OpenIIoT is a cross-platform (via Mono) application platform for the (Industrial) Internet of Things written in C#.  The code in this repository is a work in progress and is presently on hiatus while a web framework is evaluated and selected for front-end development.
 
 Feel free to email <info@openiiot.org> with any questions.
 
@@ -85,7 +85,7 @@ The various APIs exposed by the application are fully documented using [Swashbuc
 
 ![api](doc/img/api.png)
 
-This interface can be accessed via the 'API' menu, or directly at (http://demo.openiiot.org/help)[http://demo.openiiot.org/help].
+This interface can be accessed via the 'API' menu, or directly at [http://demo.openiiot.org/help](http://demo.openiiot.org/help).
 
 Note that these APIs are very much a work in progress, and presently the only two endpoints which are in a presentable state are the two which are expanded in the screenshot, Security and Packaging.
 
