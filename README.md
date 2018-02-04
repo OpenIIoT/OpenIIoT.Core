@@ -45,10 +45,6 @@ Note that there's nothing else on this server but the demo application, and the 
 
 ## Screenshots
 
-### Login
-
-![login](doc/img/login.png)
-
 ### Dashboard
 
 The application takes a hands-off approach to performance; due to the range of hardware upon which it will run (primarily single-board computers like the Raspberry Pi) and the variety of things that can be done with it, whoever is responsible for configuration needs to keep an eye on the performance characteristics and offload functionality if needed.
